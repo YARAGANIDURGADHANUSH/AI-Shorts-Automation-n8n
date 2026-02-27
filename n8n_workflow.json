@@ -1,0 +1,690 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Generate 5 viral science short video ideas similar to Zack D Films. Return them as a numbered list only.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -224,
+        -112
+      ],
+      "id": "17caa806-a98e-47f6-ae75-43dd5abfec12",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e7d5628-44ad-4aae-9a8f-2c0e459beeaf",
+              "name": "ideas",
+              "value": "={{$json[\"choices\"][0][\"message\"][\"content\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        -112
+      ],
+      "id": "15945612-1162-4284-bf7a-cc5983ec6955",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"llama-3.1-8b-instant\", \"messages\": [{ \"role\": \"user\", \"content\": \"From the following video ideas, select the MOST viral idea based on curiosity gap, educational value, and visual storytelling potential. Return ONLY the selected idea.\\n\\n\" + $json.ideas }] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        -112
+      ],
+      "id": "c554e214-926e-41f0-9fcf-e55254ffcece",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"llama-3.1-8b-instant\", \"messages\": [{ \"role\": \"user\", \"content\": \"Create a 35-second educational YouTube Shorts script in Zack D Films style for this topic:\\n\\n\" + $json[\"choices\"][0][\"message\"][\"content\"] + \"\\n\\nStructure:\\n1. Hook (curiosity question)\\n2. Explanation (simple science)\\n3. Visual moment\\n4. Ending twist\\n\\nUse simple narration sentences suitable for voiceover.\" }] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        -112
+      ],
+      "id": "5d0e6cf1-8f82-47ad-a3f1-5228261d05c4",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"llama-3.1-8b-instant\", \"messages\": [{ \"role\": \"user\", \"content\": \"Break the following short-video script into 5 cinematic scenes.\\n\\n\" + $json.choices[0].message.content + \"\\n\\nFor each scene provide:\\n1. Scene description\\n2. 3D Pixar-style image prompt\\n3. Camera movement\\n\\nReturn as numbered list.\" }] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        -112
+      ],
+      "id": "05dd19f6-ec59-4652-a6ea-6d1955174dde",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "={{\n\"https://image.pollinations.ai/prompt/\" +\nencodeURIComponent(\n$json.choices[0].message.content\n.split(\"\\n\")\n.find(line => line.toLowerCase().includes(\"image prompt\"))\n.replace(/\\*\\*/g,\"\")\n.replace(/.*image prompt[:\\-]*\\s*/i,\"\")\n.trim()\n)\n}}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1680,
+        -112
+      ],
+      "id": "9c9c96b9-b0aa-4971-89f1-af2275995126",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "message",
+              "value": "Image generated successfully",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "ad3ba46c-f478-4918-a4bb-acfc9a14e858",
+      "name": "Image Generated Successfully",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1888,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"llama-3.1-8b-instant\", \"messages\": [{ \"role\": \"user\", \"content\": \"Extract ONE short cinematic image prompt (max 15 words). Return ONLY the prompt.\\n\\n\" + $json.choices[0].message.content }] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        -112
+      ],
+      "id": "342ddb86-2af2-430b-9fc5-533a45b11a1f",
+      "name": "Prompt Cleaner"
+    },
+    {
+      "parameters": {
+        "url": "={{ \"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=\" + encodeURIComponent($json.choices[0].message.content.substring(0, 200)) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1072,
+        -112
+      ],
+      "id": "9d0f4648-66b9-4ffc-a2ac-6fa395f57348",
+      "name": "Voiceover"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"model\": \"llama-3.1-8b-instant\", \"messages\": [{ \"role\": \"user\", \"content\": \"Rewrite this script into ONLY the spoken narration (no stage directions, no parentheses, no formatting). Keep it under 180 characters, exciting and educational.\\n\\n\" + $json.choices[0].message.content }] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        816,
+        -112
+      ],
+      "id": "1af2b7cc-a941-4152-a681-20e45153b7da",
+      "name": "Narration Shortener"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  video_project: {\n    title: \"AI Generated Short\",\n    voiceover: $node[\"Voiceover\"].json,\n    image: $node[\"HTTP Request4\"].json,\n    status: \"assembled\"\n  }\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        -112
+      ],
+      "id": "9ea5a179-3547-4af6-9c1c-ffa5db93e08e",
+      "name": "Video Builder"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.creatomate.com/v2/renders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_CREATOMATE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  \"template_id\": \"125ed8a6-3896-429a-b45b-ba6f4aa39379\",\n\n  \"modifications\": {\n\n    \"Text-1.text\":\n      $node[\"Narration Shortener\"].json.choices[0].message.content\n        .replace(/[\"\\n\\r]/g, \"\"),\n\n    \"Text-2.text\":\n      \"AI Generated using n8n automation\",\n\n    \"Text-3.text\":\n      \"Images and narration generated automatically\",\n\n    \"Text-4.text\":\n      \"Fully automated AI Shorts pipeline 🚀\",\n\n    \"Music.source\":\n      \"https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=\" +\n      encodeURIComponent(\n        $node[\"Narration Shortener\"].json.choices[0].message.content\n          .replace(/[\"\\n\\r]/g, \"\")\n          .substring(0, 200)\n      ),\n\n    \"Background-1.source\":\n      $node[\"Image Generated Successfully\"].json.image_url,\n\n    \"Background-2.source\":\n      $node[\"Image Generated Successfully\"].json.image_url,\n\n    \"Background-3.source\":\n      $node[\"Image Generated Successfully\"].json.image_url,\n\n    \"Background-4.source\":\n      $node[\"Image Generated Successfully\"].json.image_url\n\n  }\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2256,
+        -112
+      ],
+      "id": "4b5f39f3-54fd-46ea-ae53-ab9801491859",
+      "name": "Render Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YtSWxw6NEgHOSK7w",
+          "name": "Creatomate API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        -112
+      ],
+      "id": "50a05fe7-0927-49df-aa66-8a9ebd3744ae",
+      "name": "Wait",
+      "webhookId": "62530e2d-79a8-4069-8524-6c462bd9e550"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.creatomate.com/v2/renders/{{$json.id}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=Authorization",
+              "value": "Bearer YOUR_CREATOMATE_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2592,
+        -112
+      ],
+      "id": "b8257723-b8dc-4cee-819b-829ffad5f2d8",
+      "name": "Check Render Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YtSWxw6NEgHOSK7w",
+          "name": "Creatomate API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$node[\"Check Render Status\"].json.url}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2656,
+        240
+      ],
+      "id": "95a3ec53-c7b7-45de-b468-22e57df5d0a5",
+      "name": "Download Video"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "=AI Fact: {{$now}}",
+        "regionCode": "IN",
+        "categoryId": "27",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        2992,
+        -112
+      ],
+      "id": "702b4f45-2d83-41a2-a92e-2f4779e7ebab",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "46CypMbq8YQdJsVT",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -528,
+        -48
+      ],
+      "id": "6f4a2ac9-1a93-4304-8891-704bf8097046",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f8943478-125d-40c6-9123-86252234db73",
+              "leftValue": "={{$json.status}}",
+              "rightValue": "succeeded",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1952,
+        192
+      ],
+      "id": "ab59b5ab-5c78-443c-8016-b8403e2f5cda",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Narration Shortener",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Image Generated Successfully",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Cleaner": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voiceover": {
+      "main": [
+        [
+          {
+            "node": "Prompt Cleaner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Narration Shortener": {
+      "main": [
+        [
+          {
+            "node": "Voiceover",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Builder": {
+      "main": [
+        [
+          {
+            "node": "Render Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Generated Successfully": {
+      "main": [
+        [
+          {
+            "node": "Video Builder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render Video": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Render Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Render Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6c58662f-fe1b-4905-b81c-37d0c63cf841",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "05ce86624fa666836a7a32f982bb30c604ab1589b20b709eb6248aa10b3d724b"
+  },
+  "id": "hZVNrVqKENB2oL0M",
+  "tags": []
+}
