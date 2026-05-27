@@ -44,6 +44,10 @@ Watch the generated AI Short:
 
 https://www.youtube.com/shorts/G2qfF9bzExg
 
+Video Explanation:
+
+https://drive.google.com/file/d/1tAfz2gwjo_fGt64ju84Z1BWNCLZN1sAN/view?usp=sharing
+
 ---
 
 ## 📁 Repository Contents
